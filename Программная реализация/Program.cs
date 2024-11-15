@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 class Warehouse {
     private Storage[] racks;
@@ -7,10 +8,30 @@ class Warehouse {
 
 class Rack: Storage {
     private Storage[] shelves;
+
+    public double GetAvailableSpace() {
+        double result = 0.0;
+
+        foreach (Storage shelf in shelves) {
+            result += shelf.GetAvailableSpace();
+        }
+
+        return result;
+    }
 }
 
 class Shelf: Storage {
     private Storage[] cells;
+
+    public double GetAvailableSpace() {
+        double result = 0.0;
+
+        foreach (Storage cell in cells) {
+            result += cell.GetAvailableSpace();
+        }
+
+        return result;
+    }
 }
 
 class Cell: Storage {
@@ -18,14 +39,18 @@ class Cell: Storage {
     private int ownerID;
     private Vector3 dimensions;
     private int max_weight;
-    private Numeric.Vector3[] available_space;
+    private Vector3 available_space;
 
-    
+    public double GetAvailableSpace() {
+        return available_space.X * available_space.Y * available_space.Z;
+    }
 }
 
 interface Storage {
-    public int GetAvailableSpace() {}
-    public int PlaceItem(Item i) {}
+    public double GetAvailableSpace() {
+        return 0.0;
+    }
+    public void PlaceItem(Item i) {}
 }
 
 class Client {
