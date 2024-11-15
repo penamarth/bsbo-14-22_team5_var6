@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 class Warehouse {
     private Storage[] racks;
@@ -19,6 +19,8 @@ class Cell: Storage {
     private Vector3 dimensions;
     private int max_weight;
     private Numeric.Vector3[] available_space;
+
+    
 }
 
 interface Storage {
