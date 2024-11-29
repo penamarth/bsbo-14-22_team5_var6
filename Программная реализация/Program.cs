@@ -1,19 +1,36 @@
 ﻿using System;
 using System.Numerics;
 
-class Warehouse {
+class Warehouse: Storage {
+    public Warehouse(Rack[] racks) {
+        this.racks = racks;
+    }
     private Storage[] racks;
     private Client[] clients;
+
+    public double GetAllAvailableSpace() {
+        double result = 0.0;
+
+        foreach (Storage rack in racks) {
+            result += rack.GetAllAvailableSpace();
+        }
+
+        return result;
+    }
 }
 
 class Rack: Storage {
+    public Rack(Shelf[] shelves) {
+        this.shelves = shelves;
+    }
+
     private Storage[] shelves;
 
-    public double GetAvailableSpace() {
+    public double GetAllAvailableSpace() {
         double result = 0.0;
 
         foreach (Storage shelf in shelves) {
-            result += shelf.GetAvailableSpace();
+            result += shelf.GetAllAvailableSpace();
         }
 
         return result;
@@ -21,13 +38,17 @@ class Rack: Storage {
 }
 
 class Shelf: Storage {
+    public Shelf(Cell[] cells) {
+        this.cells = cells;
+    }
+
     private Storage[] cells;
 
-    public double GetAvailableSpace() {
+    public double GetAllAvailableSpace() {
         double result = 0.0;
 
         foreach (Storage cell in cells) {
-            result += cell.GetAvailableSpace();
+            result += cell.GetAllAvailableSpace();
         }
 
         return result;
@@ -35,19 +56,23 @@ class Shelf: Storage {
 }
 
 class Cell: Storage {
+    public Cell(Vector3 available_space) {
+        this.available_space = available_space;
+    }
+
     private int[] stored_items;
     private int ownerID;
     private Vector3 dimensions;
     private int max_weight;
     private Vector3 available_space;
 
-    public double GetAvailableSpace() {
+    public double GetAllAvailableSpace() {
         return available_space.X * available_space.Y * available_space.Z;
     }
 }
 
 interface Storage {
-    public double GetAvailableSpace() {
+    public double GetAllAvailableSpace() {
         return 0.0;
     }
     public void PlaceItem(Item i) {}
@@ -75,6 +100,60 @@ class Item {
 
 class WarehouseNextGen {
     static void Main() {
-        Console.Write("I HATE EVERYTHING");
+        Warehouse w = new Warehouse(new Rack[] {
+            new Rack(new Shelf[] {
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                }),
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                }),
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                })
+            }),
+            new Rack(new Shelf[] {
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                }),
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                }),
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                })
+            }),
+            new Rack(new Shelf[] {
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                }),
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                }),
+                new Shelf(new Cell[] {
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1)),
+                    new Cell(available_space: new Vector3(1, 1, 1))
+                })
+            })
+        });
+
+        Console.Write(w.GetAllAvailableSpace());
     }
 }
