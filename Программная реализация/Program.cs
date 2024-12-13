@@ -38,46 +38,16 @@ class Item {
     private decimal price;
 }
 
-class Rack: Storage {
-    private List<Shelf> shelves;
-
-    public Rack(List<Shelf> shelves) {
-        this.shelves = shelves;
+class Rack: CompositeStorage {
+    public Rack(List<Storage> shelves) {
+        this.children = shelves;
     }
-
-    public void AddItem(Item item) {
-        Console.Write("Rack placing item\n");
-        shelves[0].AddItem(item);
-    }
-    public void RemoveItem(Item item) { }
-    public void GetItem(Item item) { }
-
-    public int GetStorageOwnerID() { return 0; }
-
-    public int GetItemOwnerID() { return 1; }
 }
 
-class Shelf: Storage {
-    private List<Cell> cells;
-
-    public Shelf(List<Cell> cells) {
-        this.cells = cells;
+class Shelf: CompositeStorage {
+    public Shelf(List<Storage> st) {
+        this.children = st;
     }
-
-    public void AddItem(Item item) {
-        Console.Write("Shelf placing item\n");
-        cells[0].AddItem(item);
-    }
-    public void RemoveItem(Item item) {
-
-    }
-    public void GetItem(Item item) {
-
-    }
-
-    public int GetStorageOwnerID() { return 0; }
-
-    public int GetItemOwnerID() { return 1; }
 }
 
 class Cell: Storage {
@@ -106,27 +76,44 @@ class Cell: Storage {
         return weight;
     }
 
-    public void AddItem(Item item) {
-        Console.Write("Cell placed item\n");
-    }
     public void RemoveItem(Item item) {
         Console.Write("Cell removed item\n");
     }
-    public void GetItem(Item item) {
-        
-    }
-
-    public int GetStorageOwnerID() { return 0; }
-
-    public int GetItemOwnerID() { return 1; }
 }
 
 interface Storage {
-    virtual void AddItem(Item item) { }
+    virtual void AddItem(Item item) {
+        Console.Write(this.GetType().Name + " placed item\n");
+    }
     virtual void RemoveItem(Item item) { }
     virtual void GetItem(Item item) { }
     virtual int GetStorageOwnerID() { return 0; }
     virtual int GetItemOwnerID(Item item) { return 1; }
+}
+
+class CompositeStorage: Storage {
+    public List<Storage> children;
+
+    public void AddStorage(Storage s) {
+        this.children.Add(s);
+    }
+
+    public void RemoveStorage(Storage s) {
+        this.children.Remove(s);
+    }
+
+    public void AddItem(Item i) {
+        Console.Write(this.GetType().Name + " placed item\n");
+        this.children[0].AddItem(i);
+    }
+
+    public void RemoveItem(Item i) { }
+
+    public void GetItem(Item i) { }
+
+    public int GetStorageOwnerID() { return 0; }
+
+    public int GetItemOwnerID() { return 1; }
 }
 
 class Client {
@@ -157,14 +144,20 @@ class WarehouseNextGen {
         Warehouse w = new Warehouse();
 
         Storage r = new Rack(
-                new List<Shelf>{
+                new List<Storage>{
                     new Shelf(
-                        new List<Cell>{
+                        new List<Storage>{
                             new Cell()
                         }
                     )
                 }
             );
+
+        Storage s = new Shelf(
+            new List<Storage>{
+                new Cell()
+            }
+        );
 
         w.AddStorage(r);
 
