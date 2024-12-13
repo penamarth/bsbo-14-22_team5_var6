@@ -156,8 +156,7 @@ class WarehouseNextGen {
     static void Main() {
         Warehouse w = new Warehouse();
 
-        w.AddStorage(
-            new Rack(
+        Storage r = new Rack(
                 new List<Shelf>{
                     new Shelf(
                         new List<Cell>{
@@ -165,8 +164,9 @@ class WarehouseNextGen {
                         }
                     )
                 }
-            )
-        );
+            );
+
+        w.AddStorage(r);
 
         w.AddItem(new Item());
     }
