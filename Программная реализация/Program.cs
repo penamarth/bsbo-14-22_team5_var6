@@ -38,7 +38,7 @@ class Rack: Storage {
     }
 
     public void AddItem(Item item) {
-        Console.Write("Rack placing item");
+        Console.Write("Rack placing item\n");
         shelves[0].AddItem(item);
     }
     public void RemoveItem(Item item) { }
@@ -57,7 +57,7 @@ class Shelf: Storage {
     }
 
     public void AddItem(Item item) {
-        Console.Write("Shelf placing item");
+        Console.Write("Shelf placing item\n");
         cells[0].AddItem(item);
     }
     public void RemoveItem(Item item) {
@@ -99,10 +99,10 @@ class Cell: Storage {
     }
 
     public void AddItem(Item item) {
-        Console.Write("Cell placed item");
+        Console.Write("Cell placed item\n");
     }
     public void RemoveItem(Item item) {
-        Console.Write("Cell removed item");
+        Console.Write("Cell removed item\n");
     }
     public void GetItem(Item item) {
         
@@ -150,7 +150,7 @@ class WarehouseNextGen {
             null,
             null,
             [
-                new Cell(),
+                //new Cell(),
                 new Rack(
                 [new Shelf(
                     [new Cell()]
