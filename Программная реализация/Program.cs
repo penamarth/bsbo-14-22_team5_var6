@@ -21,6 +21,7 @@ class Warehouse {
     public void AddStorage(Storage storage) { }
     public void RemoveStorage(Storage storage) { }
     public void GetStorage(Storage storage) { }
+    public void AddItem(Item i) { storage[0].AddItem(i); }
 }
 
 class Item {
@@ -36,9 +37,16 @@ class Rack: Storage {
         this.shelves = shelves;
     }
 
-    public void AddItem(Item item) { }
+    public void AddItem(Item item) {
+        Console.Write("Rack placing item");
+        shelves[0].AddItem(item);
+    }
     public void RemoveItem(Item item) { }
     public void GetItem(Item item) { }
+
+    public int GetStorageOwnerID() { return 0; }
+
+    public int GetItemOwnerID() { return 1; }
 }
 
 class Shelf: Storage {
@@ -48,16 +56,9 @@ class Shelf: Storage {
         this.cells = cells;
     }
 
-    public void AddItem(Item i) {
-
-    }
-
-    public void RemoveItem(Item i) {
-
-    }
-
     public void AddItem(Item item) {
-
+        Console.Write("Shelf placing item");
+        cells[0].AddItem(item);
     }
     public void RemoveItem(Item item) {
 
@@ -65,6 +66,10 @@ class Shelf: Storage {
     public void GetItem(Item item) {
 
     }
+
+    public int GetStorageOwnerID() { return 0; }
+
+    public int GetItemOwnerID() { return 1; }
 }
 
 class Cell: Storage {
@@ -97,19 +102,23 @@ class Cell: Storage {
         Console.Write("Cell placed item");
     }
     public void RemoveItem(Item item) {
-        Console.Write("");
+        Console.Write("Cell removed item");
     }
     public void GetItem(Item item) {
-
+        
     }
+
+    public int GetStorageOwnerID() { return 0; }
+
+    public int GetItemOwnerID() { return 1; }
 }
 
 interface Storage {
     virtual void AddItem(Item item) { }
     virtual void RemoveItem(Item item) { }
     virtual void GetItem(Item item) { }
-    virtual int GetStorageOwnerID() { }
-    virtual int GetItemOwnerID(Item item) { }
+    virtual int GetStorageOwnerID() { return 0; }
+    virtual int GetItemOwnerID(Item item) { return 1; }
 }
 
 class Client {
@@ -137,6 +146,18 @@ enum ShipmentStatus {
 
 class WarehouseNextGen {
     static void Main() {
-        Console.Write("fuck");
+        Warehouse w = new Warehouse(
+            null,
+            null,
+            [
+                new Cell(),
+                new Rack(
+                [new Shelf(
+                    [new Cell()]
+                )]
+            )]
+        );
+
+        w.AddItem(new Item());
     }
 }
