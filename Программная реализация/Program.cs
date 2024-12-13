@@ -2,40 +2,72 @@
 using System.Numerics;
 
 class Warehouse {
-    private Client[] clients;
-    private Shipment[] shipments;
-    private List<Storage> storage;
+    private List<Client> clients;
+    private List<Shipment> shipments;
+    private Storage storage;
 
-    public Warehouse(Client[] clients, Shipment[] shipments, List<Storage> storage) {
+    public Warehouse(List<Client> clients, List<Shipment> shipments, Storage storage) {
         this.clients = clients;
         this.shipments = shipments;
         this.storage = storage;
     }
 
     public Warehouse() {
-        this.storage = new List<Storage>();
+        storage = new Cell();
+        clients = new List<Client>();
+        shipments = new List<Shipment>();
     }
 
-    public void AddClient(Client client) { }
-    public void RemoveClient(Client client) { }
-    public void GetClient(Client client) { }
-    public void AddShipment(Shipment shipment) { }
-    public void RemoveShipment(Shipment shipment) { }
-    public void GetShipment(Shipment shipment) { }
-    public void AddStorage(Storage s) {
-        this.storage.Add(s);
+    public void AddClient(Client client) {
+        clients.Add(client);
     }
-    public void RemoveStorage(Storage s) {
-        this.storage.Remove(s);
+    public void RemoveClient(int index) { }
+    public Client GetClient(int index) {
+        return clients[index];
+    }
+    public void AddShipment(Shipment shipment) {
+        shipments.Add(shipment);
+    }
+    public void RemoveShipment(Shipment shipment) { }
+    public Shipment GetShipment(int index) {
+        return shipments[index];
     }
     public void GetStorage(Storage storage) { }
-    public void AddItem(Item i) { storage[0].AddItem(i); }
+    public void AddItem(Item i) { storage.AddItem(i); }
+    public int GetItemCount() { return storage.GetItemCount(); }
+    public void SetStorage(Storage s) {
+        storage = s;
+    }
+    public StorageStats GetStorageStats() {
+        StorageStats ss = new StorageStats();
+        ss.count = storage.GetItemCount();
+        return ss;
+    }
+
+    public void ChangeBalance(int client_index, decimal amount) {
+        clients[client_index].balance += amount;
+    }
+}
+
+struct StorageStats {
+    public int total_weight;
+    public int count;
+    public int total_price;
 }
 
 class Item {
     private Vector3 dimensions;
-    private Vector3 weight;
+    private int weight;
     private decimal price;
+
+    public Item() {}
+
+    public Item(
+        int w, decimal p
+    ) {
+        weight = w;
+        price = p;
+    }
 }
 
 class Rack: CompositeStorage {
@@ -55,21 +87,30 @@ class Cell: Storage {
     private Vector3 weight;
     private Item item;
     
+    private bool empty;
+
     public Cell(Vector3 dimensions, Vector3 weight) {
         this.dimensions = dimensions;
         this.weight = weight;
+        empty = true;
     }
 
     public Cell(Vector3 dimensions) {
         this.dimensions = dimensions;
+        empty = true;
     }
 
     public Cell() {
-        
+        empty = true;
     }
 
     public Vector3 GetDimensions() {
         return dimensions;
+    }
+
+    public void AddItem(Item i) {
+        Console.Write(this.GetType().Name + " placing item\n");
+        empty = false;
     }
 
     public Vector3 GetWeight() {
@@ -79,20 +120,40 @@ class Cell: Storage {
     public void RemoveItem(Item item) {
         Console.Write("Cell removed item\n");
     }
+
+    public int GetItemCount() {
+        if (empty) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }
 
 interface Storage {
     virtual void AddItem(Item item) {
-        Console.Write(this.GetType().Name + " placed item\n");
+        Console.Write(this.GetType().Name + " placing item\n");
     }
-    virtual void RemoveItem(Item item) { }
+    virtual void RemoveItem() {
+        Console.Write(this.GetType().Name + " removing item\n");
+    }
     virtual void GetItem(Item item) { }
     virtual int GetStorageOwnerID() { return 0; }
     virtual int GetItemOwnerID(Item item) { return 1; }
+
+    virtual int GetItemCount() {
+        return 0;
+    }
 }
 
 class CompositeStorage: Storage {
     public List<Storage> children;
+
+    public CompositeStorage(List<Storage> c) {
+        children = c;
+    }
+
+    public CompositeStorage () {}
 
     public void AddStorage(Storage s) {
         this.children.Add(s);
@@ -104,7 +165,12 @@ class CompositeStorage: Storage {
 
     public void AddItem(Item i) {
         Console.Write(this.GetType().Name + " placed item\n");
-        this.children[0].AddItem(i);
+        for (int ii = 0; ii < children.Count(); ii++) {
+            if (children[ii].GetItemCount() == 0) {
+                children[ii].AddItem(i);
+                break;
+            }
+        }
     }
 
     public void RemoveItem(Item i) { }
@@ -114,23 +180,41 @@ class CompositeStorage: Storage {
     public int GetStorageOwnerID() { return 0; }
 
     public int GetItemOwnerID() { return 1; }
+
+    public int GetItemCount() {
+        int result = 0;
+        foreach (Storage s in children) {
+            result += s.GetItemCount();
+        }
+        return result;
+    }
 }
 
 class Client {
-    private int id;
-    private string name;
-    private string surname;
-    private string email;
-    private string phone;
-    private decimal balance;
+    public int id;
+    public string name;
+    public string surname;
+    public string email;
+    public string phone;
+    public decimal balance;
+
+    public Client(
+        string nam,
+        string surnam,
+        string phon
+    ) {
+        name = nam;
+        surname = surnam;
+        phone = phon;
+    }
 }
 
 class Shipment {
-    private int id;
-    private int client_id;
-    private Item[] items;
-    private decimal price;
-    private ShipmentStatus status;
+    public int id;
+    public int client_id;
+    public Item[] items;
+    public decimal price;
+    public ShipmentStatus status;
 }
 
 enum ShipmentStatus {
@@ -147,6 +231,9 @@ class WarehouseNextGen {
                 new List<Storage>{
                     new Shelf(
                         new List<Storage>{
+                            new Cell(),
+                            new Cell(),
+                            new Cell(),
                             new Cell()
                         }
                     )
@@ -159,8 +246,24 @@ class WarehouseNextGen {
             }
         );
 
-        w.AddStorage(r);
-
+        w.SetStorage(r);
+        Console.Write(w.GetItemCount() + "\n");
         w.AddItem(new Item());
+        //w.AddItem(new Item());
+        Console.Write(w.GetItemCount() + "\n");
+        Console.Write(w.GetStorageStats().count + "\n");
+
+        w.AddClient(new Client(
+            "Name",
+            "Surname",
+            "+38909278589279573285"
+        ));
+
+        Console.Write(w.GetClient(0).phone + "\n");
+        Console.Write(w.GetClient(0).balance + "\n");
+        w.ChangeBalance(0, 3123);
+        Console.Write(w.GetClient(0).balance + "\n");
+        w.ChangeBalance(0, -123);
+        Console.Write(w.GetClient(0).balance + "\n");
     }
 }
