@@ -12,14 +12,18 @@ class Warehouse {
         this.storage = storage;
     }
 
+    public Warehouse() {
+        this.storage = new List<Storage>();
+    }
+
     public void AddClient(Client client) { }
     public void RemoveClient(Client client) { }
     public void GetClient(Client client) { }
     public void AddShipment(Shipment shipment) { }
     public void RemoveShipment(Shipment shipment) { }
     public void GetShipment(Shipment shipment) { }
-    public void AddStorage(Storage storage) {
-        this.storage.Add(storage);
+    public void AddStorage(Storage s) {
+        this.storage.Add(s);
     }
     public void RemoveStorage(Storage s) {
         this.storage.Remove(s);
@@ -150,20 +154,18 @@ enum ShipmentStatus {
 
 class WarehouseNextGen {
     static void Main() {
-        Warehouse w = new Warehouse(
-            null,
-            null,
-            new List<Storage>{
-                new Rack(
-                    new List<Shelf>{
-                        new Shelf(
-                            new List<Cell>{
-                                new Cell()
-                            }
-                        )
-                    }
-                )
-            }
+        Warehouse w = new Warehouse();
+
+        w.AddStorage(
+            new Rack(
+                new List<Shelf>{
+                    new Shelf(
+                        new List<Cell>{
+                            new Cell()
+                        }
+                    )
+                }
+            )
         );
 
         w.AddItem(new Item());
