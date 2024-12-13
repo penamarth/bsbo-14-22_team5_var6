@@ -35,6 +35,10 @@ class Rack: Storage {
     public Rack(Shelf[] shelves) {
         this.shelves = shelves;
     }
+
+    public void AddItem(Item item) { }
+    public void RemoveItem(Item item) { }
+    public void GetItem(Item item) { }
 }
 
 class Shelf: Storage {
@@ -42,6 +46,24 @@ class Shelf: Storage {
 
     public Shelf(Cell[] cells) {
         this.cells = cells;
+    }
+
+    public void AddItem(Item i) {
+
+    }
+
+    public void RemoveItem(Item i) {
+
+    }
+
+    public void AddItem(Item item) {
+
+    }
+    public void RemoveItem(Item item) {
+
+    }
+    public void GetItem(Item item) {
+
     }
 }
 
@@ -71,17 +93,23 @@ class Cell: Storage {
         return weight;
     }
 
-    public void AddItem(Item item) { }
-    public void RemoveItem(Item item) { }
-    public void GetItem(Item item) { }
+    public void AddItem(Item item) {
+        Console.Write("Cell placed item");
+    }
+    public void RemoveItem(Item item) {
+        Console.Write("");
+    }
+    public void GetItem(Item item) {
+
+    }
 }
 
-interface Storage<T> {
-    virtual void AddItem(T item) { }
-    virtual void RemoveItem(T item) { }
-    virtual void GetItem(T item) { }
+interface Storage {
+    virtual void AddItem(Item item) { }
+    virtual void RemoveItem(Item item) { }
+    virtual void GetItem(Item item) { }
     virtual int GetStorageOwnerID() { }
-    virtual int GetItemOwnerID(T item) { }
+    virtual int GetItemOwnerID(Item item) { }
 }
 
 class Client {
