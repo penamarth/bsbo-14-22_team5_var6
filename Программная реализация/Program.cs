@@ -4,9 +4,9 @@ using System.Numerics;
 class Warehouse {
     private Client[] clients;
     private Shipment[] shipments;
-    private Storage[] storage;
+    private List<Storage> storage;
 
-    public Warehouse(Client[] clients, Shipment[] shipments, Storage[] storage) {
+    public Warehouse(Client[] clients, Shipment[] shipments, List<Storage> storage) {
         this.clients = clients;
         this.shipments = shipments;
         this.storage = storage;
@@ -18,8 +18,12 @@ class Warehouse {
     public void AddShipment(Shipment shipment) { }
     public void RemoveShipment(Shipment shipment) { }
     public void GetShipment(Shipment shipment) { }
-    public void AddStorage(Storage storage) { }
-    public void RemoveStorage(Storage storage) { }
+    public void AddStorage(Storage storage) {
+        this.storage.Add(storage);
+    }
+    public void RemoveStorage(Storage s) {
+        this.storage.Remove(s);
+    }
     public void GetStorage(Storage storage) { }
     public void AddItem(Item i) { storage[0].AddItem(i); }
 }
@@ -31,9 +35,9 @@ class Item {
 }
 
 class Rack: Storage {
-    private Shelf[] shelves;
+    private List<Shelf> shelves;
 
-    public Rack(Shelf[] shelves) {
+    public Rack(List<Shelf> shelves) {
         this.shelves = shelves;
     }
 
@@ -50,9 +54,9 @@ class Rack: Storage {
 }
 
 class Shelf: Storage {
-    private Cell[] cells;
+    private List<Cell> cells;
 
-    public Shelf(Cell[] cells) {
+    public Shelf(List<Cell> cells) {
         this.cells = cells;
     }
 
@@ -149,13 +153,17 @@ class WarehouseNextGen {
         Warehouse w = new Warehouse(
             null,
             null,
-            [
-                //new Cell(),
+            new List<Storage>{
                 new Rack(
-                [new Shelf(
-                    [new Cell()]
-                )]
-            )]
+                    new List<Shelf>{
+                        new Shelf(
+                            new List<Cell>{
+                                new Cell()
+                            }
+                        )
+                    }
+                )
+            }
         );
 
         w.AddItem(new Item());
